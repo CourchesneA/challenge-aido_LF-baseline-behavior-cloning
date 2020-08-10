@@ -10,6 +10,7 @@ from aido_schemas import EpisodeStart, protocol_agent_duckiebot1, PWMCommands, D
 from helperFncs import Validation_Functions, SteeringToWheelVelWrapper, image_resize
 
 MODEL = "FrankNet.h5"
+#MODEL = "BestAIDO3FrankNet.h5"
 
 #! Global Config
 expect_shape = (480, 640, 3)

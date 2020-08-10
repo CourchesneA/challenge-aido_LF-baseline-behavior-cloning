@@ -33,9 +33,14 @@ COPY requirements.txt .
 RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt
 
+RUN pip uninstall -y keras
+RUN pip install keras --upgrade
+
+
 # let's copy all our solution files to our workspace
 # if you have more file use the COPY command to move them to the workspace
 COPY solution.py /workspace
+#COPY BestAIDO3FrankNet.h5 /workspace
 COPY FrankNet.h5 /workspace
 COPY helperFncs.py /workspace
 # we make the workspace our working directory

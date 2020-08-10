@@ -15,7 +15,7 @@ GPU_COUNT = 1    # Change this value if you are using multiple GPUs
 MULTI_GPU = False #Change this to enable multi-GPU
 
 #! Log Interpretation
-STORAGE_LOCATION = "trained_models/behavioral_cloning"
+STORAGE_LOCATION = "trained_models/"
 
 #! Global training data storage
 # TODO: This should be optimized?
@@ -26,7 +26,7 @@ angular = []
 
 def load_data():
     global observation, linear, angular
-    reader = Reader('train.log')
+    reader = Reader('train_logA.log')
     observation, linear, angular = reader.read()
     observation = np.array(observation)
     linear = np.array(linear)
