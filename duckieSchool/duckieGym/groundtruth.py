@@ -85,7 +85,7 @@ sleep_after_reset(5)
 actions = []
 observation = []
 datagen = Logger(env, log_file='training_data.log')
-rawlog = Logger(env, log_file='raw_log.log')
+#rawlog = Logger(env, log_file='raw_log.log')
 last_reward = 0
 episode = 0
 
@@ -130,7 +130,7 @@ def playback():
             print('Size of rawlog: ', len(rawlog.recording))
     else:
         datagen.on_episode_done()
-        rawlog.on_episode_done()
+        #rawlog.on_episode_done()
     #! Done
     return
 
@@ -273,7 +273,7 @@ def update(dt):
             # cv2.waitKey(1)
 
             datagen.log(cropped_final, action, reward, done, info)
-            rawlog.log(obs, action, reward, done, info)
+            #rawlog.log(obs, action, reward, done, info)
             last_reward = reward
         else:
             print('Bad Training Data! Discarding...')
@@ -310,5 +310,5 @@ pyglet.app.run()
 
 #! Log and exit
 datagen.close()
-rawlog.close()
+#rawlog.close()
 env.close()
