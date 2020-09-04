@@ -1,14 +1,16 @@
 import tensorflow as tf
 from frankModel import FrankNet  # The model we are gonna use to train
 from logReader import Reader
-from sklearn.model_selection import train_test_split
+# from sklearn.model_selection import train_test_split
+from log_schema import Episode, Step
 import time
 import numpy as np
 import os
 
 
 #! Training Configuration
-EPOCHS = 1000000 #EPOCHS
+# EPOCHS = 1000000 #EPOCHS
+EPOCHS = 1
 INIT_LR = 1e-3   #LEARNING RATE
 BS = 8          #Batch Size 
 GPU_COUNT = 1    # Change this value if you are using multiple GPUs
@@ -16,26 +18,40 @@ MULTI_GPU = False #Change this to enable multi-GPU
 
 #! Log Interpretation
 STORAGE_LOCATION = "trained_models/"
+DATA_FILE = "training_data.log"
 
-#! Global training data storage
-# TODO: This should be optimized?
-observation = []
-linear = []
-angular = []
+# #! Global training data storage
+# # TODO: This should be optimized?
+# observation = []
+# linear = []
+# angular = []
 
 
-def load_data():
-    global observation, linear, angular
-    reader = Reader('train_logA.log')
-    observation, linear, angular = reader.read()
-    observation = np.array(observation)
-    linear = np.array(linear)
-    angular = np.array(angular)
-    print('Observation Length: ', len(observation))
-    print('Linear Length: ', len(linear))
-    print('Angular Length: ', len(angular))
-    # exit()
-    return
+# def load_data():
+#     global observation, linear, angular
+#     reader = Reader('train_logA.log')
+#     observation, linear, angular = reader.read()
+#     observation = np.array(observation)
+#     linear = np.array(linear)
+#     angular = np.array(angular)
+#     print('Observation Length: ', len(observation))
+#     print('Linear Length: ', len(linear))
+#     print('Angular Length: ', len(angular))
+#     # exit()
+#     return
+
+def load_dataset() -> (tf.data.Dataset, int):
+    """
+    returns dataset, datasetsize
+    """
+    reader = Reader(DATA_FILE)
+    dataset = tf.data.Dataset.from_generator(
+        reader.get_dataset,
+        (tf.float32, tf.float32)
+    )
+    return (dataset, reader.observations_size)
+
+
 
 
 # -----------------------------------------------------------------------------
@@ -70,15 +86,21 @@ except OSError:
     exit()    
 
 # 1. Load all the datas
-load_data()
-print('Load all complete')
+dataset, ds_size = load_dataset()
+print('Load generator complete')
 
 # 2. Split training and testing
-observation_train, observation_valid, linear_train, linear_valid, angular_train, angular_valid = train_test_split(
-    observation, linear, angular, test_size=0.2, shuffle=True)
+# observation_train, observation_valid, linear_train, linear_valid, angular_train, angular_valid = train_test_split(
+#     observation, linear, angular, test_size=0.2, shuffle=True)
+
+train_size = int(0.8 * ds_size)
+
+train_dataset = dataset.take(train_size)
+test_dataset = dataset.skip(train_size)
 
 # 3. Build the model
-single_model = FrankNet.build(200, 150)
+# single_model = FrankNet.build(200, 150)
+single_model = FrankNet.build(480, 640)
 
 # 4. Define the loss function and weight
 losses = {
@@ -123,10 +145,14 @@ checkpoint2 = tf.keras.callbacks.ModelCheckpoint(
 callbacks_list = [checkpoint1, checkpoint2, tensorboard]
 
 # 11. GO!
-history = model.fit(observation_train,
-                    {"Linear": linear_train,
-                        "Angular": angular_train}, validation_data=(observation_valid, {
-                            "Linear": linear_valid, "Angular": angular_valid}),
+# history = model.fit(observation_train,
+#                     {"Linear": linear_train,
+#                         "Angular": angular_train}, validation_data=(observation_valid, {
+#                             "Linear": linear_valid, "Angular": angular_valid}),
+#                     epochs=EPOCHS, callbacks=callbacks_list, verbose=1)
+
+print("Training starting...")
+history = model.fit(train_dataset, validation_data=(test_dataset),
                     epochs=EPOCHS, callbacks=callbacks_list, verbose=1)
 
-model.save('trainedModel/FrankNet.h5')
+model.save('trainedModel/TNet.h5')
