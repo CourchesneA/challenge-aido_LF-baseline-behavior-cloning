@@ -77,6 +77,6 @@ class FrankNet:
         angularVelocity = FrankNet.build_angular_branch(inputs)
 
         model = tf.keras.Model(inputs=inputs, outputs=[
-            linearVelocity, angularVelocity], name="FrankNet")
+            linearVelocity, angularVelocity], name="TNet")
 
         return model
