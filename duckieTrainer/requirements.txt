@@ -1,0 +1,8 @@
+aido-protocols-daffy
+duckietown-world-daffy
+duckietown-challenges-daffy
+keras
+numpy
+opencv-python
+sklearn
+tensorflow==2.2.0
