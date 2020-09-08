@@ -66,7 +66,7 @@ class Reader:
                         assert self.episode_data.version == SCHEMA_VERSION, "Schema version do not match"
                     except EOFError:
                         print("End of log file !")
-                        break
+                        return
                 try:
                     step: Step = self.episode_data.steps[self.episode_index]
                     self.episode_index += 1
