@@ -3,6 +3,7 @@ from frankModel import FrankNet  # The model we are gonna use to train
 from logReader import Reader
 # from sklearn.model_selection import train_test_split
 from log_schema import Episode, Step
+import sys
 import time
 import numpy as np
 import os
@@ -18,7 +19,8 @@ MULTI_GPU = False #Change this to enable multi-GPU
 
 #! Log Interpretation
 STORAGE_LOCATION = "trained_models/"
-DATA_FILE = "training_data.log"
+#DATA_FILE = "training_data.log"
+DATA_FILE = "training_slim.log"
 
 # #! Global training data storage
 # # TODO: This should be optimized?
@@ -87,7 +89,15 @@ except OSError:
 
 # 1. Load all the datas
 dataset, ds_size = load_dataset()
+dataset = dataset.batch(10)
 print('Load generator complete')
+
+# for (x,y) in dataset:
+#     print("Data shape: ", x.shape, y.shape)
+#     break
+# sys.exit(0)
+# Data shape:  (480, 640, 3) (2,)
+
 
 # 2. Split training and testing
 # observation_train, observation_valid, linear_train, linear_valid, angular_train, angular_valid = train_test_split(
