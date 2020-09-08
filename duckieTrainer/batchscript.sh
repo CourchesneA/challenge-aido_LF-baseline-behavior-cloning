@@ -2,12 +2,12 @@
 #SBATCH --partition=main
 #SBATCH --cpus-per-task=1
 #SBATCH --gres=gpu:1
-#SBATCH --mem=45G
+#SBATCH --mem=15G
 #SBATCH --time=10:00:00
 #SBATCH -o /network/tmp1/courchea/slurm-%j.out
 
 module load python/3.7
-module load cuda/11.0
+module load cuda/10.1/cudnn/7.6
 module load tensorflow/2.2
 
 virtualenv tmp
