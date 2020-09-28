@@ -11,7 +11,7 @@ import os
 
 #! Training Configuration
 # EPOCHS = 1000000 #EPOCHS
-EPOCHS = 1
+EPOCHS = 25
 INIT_LR = 1e-3   #LEARNING RATE
 BS = 8          #Batch Size 
 GPU_COUNT = 1    # Change this value if you are using multiple GPUs
@@ -20,7 +20,7 @@ MULTI_GPU = False #Change this to enable multi-GPU
 #! Log Interpretation
 STORAGE_LOCATION = "trained_models/"
 #DATA_FILE = "training_data.log"
-DATA_FILE = "training_slim.log"
+DATA_FILE = "train_750_1000.log"
 
 # #! Global training data storage
 # # TODO: This should be optimized?
@@ -89,7 +89,7 @@ except OSError:
 
 # 1. Load all the datas
 dataset, ds_size = load_dataset()
-dataset = dataset.batch(10)
+dataset = dataset.batch(1,drop_remainder=True).prefetch(1)
 print('Load generator complete')
 
 # for (x,y) in dataset:

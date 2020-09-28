@@ -10,14 +10,17 @@ module load python/3.7
 module load cuda/10.1/cudnn/7.6
 module load tensorflow/2.2
 
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/cvmfs/ai.mila.quebec/apps/x86_64/common/cuda/10.1/extras/CUPTI/lib64
+export LD_INCLUDE_PATH=$LD_INCLUDE_PATH:/cvmfs/ai.mila.quebec/apps/x86_64/common/cuda/10.1/extras/CUPTI/include
+
 virtualenv tmp
 source tmp/bin/activate
 pip install -r requirements.txt
 
-source startvx.sh
-
-sleep 2
-
-xdpyinfo -display :99 >/dev/null 2>&1 && echo "In use" || echo "Free"
+#source startvx.sh
+#
+#sleep 2
+#
+#xdpyinfo -display :99 >/dev/null 2>&1 && echo "In use" || echo "Free"
 
 python3 train.py
