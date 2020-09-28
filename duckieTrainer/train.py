@@ -7,7 +7,7 @@ import sys
 import time
 import numpy as np
 import os
-import datetime
+from datetime import datetime
 
 
 #! Training Configuration
