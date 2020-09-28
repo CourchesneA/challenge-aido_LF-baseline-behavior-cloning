@@ -7,6 +7,7 @@ import sys
 import time
 import numpy as np
 import os
+import datetime
 
 
 #! Training Configuration
@@ -139,16 +140,16 @@ model.compile(optimizer=opt, loss=losses, loss_weights=lossWeights,
 
 # 9. Setup tensorboard
 tensorboard = tf.keras.callbacks.TensorBoard(
-    log_dir='logs/{}'.format(time.ctime()))
+    log_dir='logs/{}'.format(datetime.now().strftime("%Y%m%d-%H%M%S")))
 
 # 10. checkpoint
 #? Keep track of the best validation loss model
-filepath1 = "trainedModel/FrankNetBest_Validation.h5"
+filepath1 = "trainedModel/FrankNetBest2_Validation.h5"
 checkpoint1 = tf.keras.callbacks.ModelCheckpoint(
     filepath1, monitor='val_loss', verbose=1, save_best_only=True, mode='min')
 
 #? Keep track of the best loss model
-filepath2 = "trainedModel/FrankNetBest_Loss.h5"
+filepath2 = "trainedModel/FrankNetBest2_Loss.h5"
 checkpoint2 = tf.keras.callbacks.ModelCheckpoint(
     filepath2, monitor='loss', verbose=1, save_best_only=True, mode='min')
 
@@ -164,5 +165,7 @@ callbacks_list = [checkpoint1, checkpoint2, tensorboard]
 print("Training starting...")
 history = model.fit(train_dataset, validation_data=(test_dataset),
                     epochs=EPOCHS, callbacks=callbacks_list, verbose=1)
+print("Done, Saving model...")
 
 model.save('trainedModel/TNet.h5')
+print("Saved model TNet.h5")
