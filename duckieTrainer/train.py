@@ -164,7 +164,7 @@ callbacks_list = [checkpoint1, checkpoint2, tensorboard]
 
 print("Training starting...")
 history = model.fit(train_dataset, validation_data=(test_dataset),
-                    epochs=EPOCHS, callbacks=callbacks_list, verbose=1)
+                    epochs=EPOCHS, callbacks=callbacks_list, verbose=2)
 print("Done, Saving model...")
 
 model.save('trainedModel/TNet.h5')
