@@ -167,5 +167,5 @@ history = model.fit(train_dataset, validation_data=(test_dataset),
                     epochs=EPOCHS, callbacks=callbacks_list, verbose=2)
 print("Done, Saving model...")
 
-model.save('trainedModel/TNet.tf', save_format="tf")
+model.save('trainedModel/TNet.tf', save_format="tf", custom_objects={"rmse":rmse, "r_square":r_square})
 print("Saved model TNet.tf")
