@@ -44,7 +44,7 @@ parser.add_argument('--distortion', default=True)
 
 parser.add_argument('--raw-log', default=False,
                     help='enables recording high resolution raw log')
-parser.add_argument('--steps',default=1500,help='number of steps to record in one batch')
+parser.add_argument('--steps',default=1500,help='number of steps to record in one batch', type=int)
 parser.add_argument('--no-render', action='store_true', default=True)
 parser.add_argument('--nb-episodes', default=500, type=int)
 
@@ -84,7 +84,8 @@ sleep_after_reset(5)
 # global variables for demo recording
 actions = []
 observation = []
-datagen = Logger(env, log_file='training_data.log')
+logname = f"ds_{args.steps}_{args.nb_episodes}.log"
+datagen = Logger(env, log_file=logname)
 #rawlog = Logger(env, log_file='raw_log.log')
 last_reward = 0
 episode = 0

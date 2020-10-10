@@ -12,17 +12,16 @@ from datetime import datetime
 
 #! Training Configuration
 # EPOCHS = 1000000 #EPOCHS
-EPOCHS = 25
+EPOCHS = 4
 INIT_LR = 1e-3   #LEARNING RATE
 BS = 8          #Batch Size 
 GPU_COUNT = 1    # Change this value if you are using multiple GPUs
 MULTI_GPU = False #Change this to enable multi-GPU
 
 #! Log Interpretation
-STORAGE_LOCATION = "trained_models/"
-#DATA_FILE = "training_data.log"
-DATA_FILE = "train_750_1000.log"
-
+STORAGE_LOCATION = "../../Datasets/"
+DATA_FILE = "train_1000_1000.log"
+MODEL_NAME = "TNet2"
 # #! Global training data storage
 # # TODO: This should be optimized?
 # observation = []
@@ -90,7 +89,7 @@ except OSError:
 
 # 1. Load all the datas
 dataset, ds_size = load_dataset()
-dataset = dataset.batch(1,drop_remainder=True).prefetch(1)
+dataset = dataset.batch(BS,drop_remainder=True).prefetch(1)
 print('Load generator complete')
 
 # for (x,y) in dataset:
@@ -140,16 +139,16 @@ model.compile(optimizer=opt, loss=losses, loss_weights=lossWeights,
 
 # 9. Setup tensorboard
 tensorboard = tf.keras.callbacks.TensorBoard(
-    log_dir='logs/{}'.format(datetime.now().strftime("%Y%m%d-%H%M%S")))
+    log_dir='logs/{}'.format(f'{MODEL_NAME}-{datetime.now().strftime("%Y%m%d-%H")}'))
 
 # 10. checkpoint
 #? Keep track of the best validation loss model
-filepath1 = "trainedModel/FrankNetBest2_Validation.h5"
+filepath1 = f"trainedModel/{MODEL_NAME}_Validation.h5"
 checkpoint1 = tf.keras.callbacks.ModelCheckpoint(
     filepath1, monitor='val_loss', verbose=1, save_best_only=True, mode='min')
 
 #? Keep track of the best loss model
-filepath2 = "trainedModel/FrankNetBest2_Loss.h5"
+filepath2 = f"trainedModel/{MODEL_NAME}_Loss.h5"
 checkpoint2 = tf.keras.callbacks.ModelCheckpoint(
     filepath2, monitor='loss', verbose=1, save_best_only=True, mode='min')
 
@@ -167,5 +166,5 @@ history = model.fit(train_dataset, validation_data=(test_dataset),
                     epochs=EPOCHS, callbacks=callbacks_list, verbose=2)
 print("Done, Saving model...")
 
-model.save('trainedModel/TNet.tf', save_format="tf", custom_objects={"rmse":rmse, "r_square":r_square})
-print("Saved model TNet.tf")
+model.save(f'trainedModel/{MODEL_NAME}.h5', save_format="h5")
+print(f"Saved model {MODEL_NAME}.h5")
