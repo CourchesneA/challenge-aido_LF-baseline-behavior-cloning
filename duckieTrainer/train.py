@@ -12,16 +12,16 @@ from datetime import datetime
 
 #! Training Configuration
 # EPOCHS = 1000000 #EPOCHS
-EPOCHS = 4
+EPOCHS = 2
 INIT_LR = 1e-3   #LEARNING RATE
-BS = 8          #Batch Size 
+BS = 1          #Batch Size 
 GPU_COUNT = 1    # Change this value if you are using multiple GPUs
 MULTI_GPU = False #Change this to enable multi-GPU
 
 #! Log Interpretation
-STORAGE_LOCATION = "../../Datasets/"
-DATA_FILE = "train_1000_1000.log"
-MODEL_NAME = "TNet2"
+STORAGE_LOCATION = "/miniscratch/courchea/"
+DATA_FILE = "ds_1000_1200.log"
+MODEL_NAME = "TNetB"
 # #! Global training data storage
 # # TODO: This should be optimized?
 # observation = []
@@ -46,7 +46,7 @@ def load_dataset() -> (tf.data.Dataset, int):
     """
     returns dataset, datasetsize
     """
-    reader = Reader(DATA_FILE)
+    reader = Reader(STORAGE_LOCATION + DATA_FILE)
     dataset = tf.data.Dataset.from_generator(
         reader.get_dataset,
         (tf.float32, tf.float32)
