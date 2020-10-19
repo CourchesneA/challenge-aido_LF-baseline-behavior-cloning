@@ -12,7 +12,7 @@ from datetime import datetime
 
 #! Training Configuration
 # EPOCHS = 1000000 #EPOCHS
-EPOCHS = 2
+EPOCHS = 4
 INIT_LR = 1e-3   #LEARNING RATE
 BS = 1          #Batch Size 
 GPU_COUNT = 1    # Change this value if you are using multiple GPUs
@@ -20,8 +20,8 @@ MULTI_GPU = False #Change this to enable multi-GPU
 
 #! Log Interpretation
 STORAGE_LOCATION = "/miniscratch/courchea/"
-DATA_FILE = "ds_1000_1200.log"
-MODEL_NAME = "TNetB"
+DATA_FILE = "ds_1000_1200slim.log"
+MODEL_NAME = "TNetSM"
 # #! Global training data storage
 # # TODO: This should be optimized?
 # observation = []
@@ -109,8 +109,10 @@ train_dataset = dataset.take(train_size)
 test_dataset = dataset.skip(train_size)
 
 # 3. Build the model
-# single_model = FrankNet.build(200, 150)
-single_model = FrankNet.build(480, 640)
+if 'slim' in DATA_FILE:
+    single_model = FrankNet.build(200, 150)
+else:
+    single_model = FrankNet.build(480, 640)
 
 # 4. Define the loss function and weight
 losses = {
@@ -166,5 +168,6 @@ history = model.fit(train_dataset, validation_data=(test_dataset),
                     epochs=EPOCHS, callbacks=callbacks_list, verbose=2)
 print("Done, Saving model...")
 
-model.save(f'trainedModel/{MODEL_NAME}.h5', save_format="h5")
-print(f"Saved model {MODEL_NAME}.h5")
+model.save(f'trainedModel/{MODEL_NAME}')
+#model.save(f'trainedModel/{MODEL_NAME}.h5', save_format="h5")
+print(f"Saved model {MODEL_NAME}")

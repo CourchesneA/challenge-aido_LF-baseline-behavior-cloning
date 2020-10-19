@@ -4,7 +4,7 @@
 #SBATCH --gres=gpu:1
 #SBATCH --mem=20G
 #SBATCH --time=24:00:00
-#SBATCH -o /network/tmp1/courchea/slurm-%j.out
+#SBATCH -o /miniscratch/courchea/jout/slurm-%j.out
 
 module load python/3.7
 module load cuda/10.1/cudnn/7.6
