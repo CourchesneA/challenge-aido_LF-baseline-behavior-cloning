@@ -12,16 +12,16 @@ from datetime import datetime
 
 #! Training Configuration
 # EPOCHS = 1000000 #EPOCHS
-EPOCHS = 4
+EPOCHS = 30
 INIT_LR = 1e-3   #LEARNING RATE
-BS = 1          #Batch Size 
+BS = 64          #Batch Size 
 GPU_COUNT = 1    # Change this value if you are using multiple GPUs
 MULTI_GPU = False #Change this to enable multi-GPU
 
 #! Log Interpretation
 STORAGE_LOCATION = "/miniscratch/courchea/"
-DATA_FILE = "ds_1000_1200slim.log"
-MODEL_NAME = "TNetSM"
+DATA_FILE = "ds_800_600slim.log"
+MODEL_NAME = f"TNetBS"
 # #! Global training data storage
 # # TODO: This should be optimized?
 # observation = []
@@ -138,6 +138,8 @@ else:
 # 8. Compile model and plot to see
 model.compile(optimizer=opt, loss=losses, loss_weights=lossWeights,
               metrics=metrics_list)
+
+model.load_weights("trainedModel/TNetSM_Validation.h5")
 
 # 9. Setup tensorboard
 tensorboard = tf.keras.callbacks.TensorBoard(

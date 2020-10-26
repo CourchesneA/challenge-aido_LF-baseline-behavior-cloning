@@ -71,7 +71,7 @@ class Reader:
                     step: Step = self.episode_data.steps[self.episode_index]
                     self.episode_index += 1
                 except IndexError:
-                    print("Step is out of bound, starting new episode")
+                    #print("Step is out of bound, starting new episode")
                     self.episode_data = None
                     continue
                 yield (step.obs, step.action)
