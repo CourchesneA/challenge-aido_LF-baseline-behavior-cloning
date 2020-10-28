@@ -12,16 +12,17 @@ from datetime import datetime
 
 #! Training Configuration
 # EPOCHS = 1000000 #EPOCHS
-EPOCHS = 30
+EPOCHS = 35
 INIT_LR = 1e-3   #LEARNING RATE
-BS = 64          #Batch Size 
+BS = 128          #Batch Size 
 GPU_COUNT = 1    # Change this value if you are using multiple GPUs
 MULTI_GPU = False #Change this to enable multi-GPU
 
 #! Log Interpretation
 STORAGE_LOCATION = "/miniscratch/courchea/"
+#DATA_FILE = "ds_1000_1200slim.log"
 DATA_FILE = "ds_800_600slim.log"
-MODEL_NAME = f"TNetBS"
+MODEL_NAME = f"TNetH"
 # #! Global training data storage
 # # TODO: This should be optimized?
 # observation = []
@@ -49,11 +50,10 @@ def load_dataset() -> (tf.data.Dataset, int):
     reader = Reader(STORAGE_LOCATION + DATA_FILE)
     dataset = tf.data.Dataset.from_generator(
         reader.get_dataset,
-        (tf.float32, tf.float32)
+        output_types=(tf.uint8, (tf.float32,tf.float32)),
+        output_shapes=([150, 200, 3],[None, None])
     )
     return (dataset, reader.observations_size)
-
-
 
 
 # -----------------------------------------------------------------------------
@@ -107,6 +107,7 @@ train_size = int(0.8 * ds_size)
 
 train_dataset = dataset.take(train_size)
 test_dataset = dataset.skip(train_size)
+print("Split dataset in train/test done")
 
 # 3. Build the model
 if 'slim' in DATA_FILE:
@@ -138,8 +139,6 @@ else:
 # 8. Compile model and plot to see
 model.compile(optimizer=opt, loss=losses, loss_weights=lossWeights,
               metrics=metrics_list)
-
-model.load_weights("trainedModel/TNetSM_Validation.h5")
 
 # 9. Setup tensorboard
 tensorboard = tf.keras.callbacks.TensorBoard(
