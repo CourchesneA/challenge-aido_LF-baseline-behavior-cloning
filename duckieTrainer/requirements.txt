@@ -5,4 +5,4 @@ keras
 numpy
 opencv-python
 sklearn
-tensorflow==2.2.0
+tensorflow

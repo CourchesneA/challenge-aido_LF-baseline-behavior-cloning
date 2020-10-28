@@ -12,7 +12,7 @@ from datetime import datetime
 
 #! Training Configuration
 # EPOCHS = 1000000 #EPOCHS
-EPOCHS = 35
+EPOCHS = 55
 INIT_LR = 1e-3   #LEARNING RATE
 BS = 128          #Batch Size 
 GPU_COUNT = 1    # Change this value if you are using multiple GPUs
@@ -20,14 +20,22 @@ MULTI_GPU = False #Change this to enable multi-GPU
 
 #! Log Interpretation
 STORAGE_LOCATION = "/miniscratch/courchea/"
-#DATA_FILE = "ds_1000_1200slim.log"
+STORAGE_LOCATION = ""
 DATA_FILE = "ds_800_600slim.log"
-MODEL_NAME = f"TNetH"
+DATA_FILE = "slimmd.log"
+MODEL_NAME = f"TNetLC"
 # #! Global training data storage
 # # TODO: This should be optimized?
 # observation = []
 # linear = []
 # angular = []
+
+print(f"Starting training script with\n\t\
+        BS: {BS},\n\t\
+        Epochs: {EPOCHS},\n\t\
+        LR: {INIT_LR},\n\t\
+        DS: {DATA_FILE},\n\t\
+        ModelName: {MODEL_NAME}")
 
 
 # def load_data():
@@ -50,8 +58,8 @@ def load_dataset() -> (tf.data.Dataset, int):
     reader = Reader(STORAGE_LOCATION + DATA_FILE)
     dataset = tf.data.Dataset.from_generator(
         reader.get_dataset,
-        output_types=(tf.uint8, (tf.float32,tf.float32)),
-        output_shapes=([150, 200, 3],[None, None])
+        output_types=(tf.uint8, tf.float32),
+        output_shapes=([150, 200, 3],[2])
     )
     return (dataset, reader.observations_size)
 
@@ -85,7 +93,7 @@ except FileExistsError:
     print("Directory already exists!")
 except OSError:
     print("Create folder for trained model failed. Please check system permissions.")
-    exit()    
+    exit()
 
 # 1. Load all the datas
 dataset, ds_size = load_dataset()
@@ -139,6 +147,8 @@ else:
 # 8. Compile model and plot to see
 model.compile(optimizer=opt, loss=losses, loss_weights=lossWeights,
               metrics=metrics_list)
+
+model.load_weights("trainedModel/TNetLC")
 
 # 9. Setup tensorboard
 tensorboard = tf.keras.callbacks.TensorBoard(
