@@ -12,7 +12,7 @@ from log_util import Logger
 from log_schema import Episode, Step
 import cv2
 
-VEHICLE_NAME = 'avlduck2'
+VEHICLE_NAME = 'zetium1'
 
 # A collection of ros messages coming from a single topic.
 MessageCollection = collections.namedtuple(
@@ -59,7 +59,7 @@ def main():
         # the duckiebot name can change from one bag file to the other, so define
         # the topics WITHOUT the duckiebot name in the beginning
         "/camera_node/image/compressed",
-        "/joy"
+        "/lane_controller_node/car_cmd"
     ]
 
     # define the bags_directory in order to extract the data
@@ -112,9 +112,10 @@ def main():
         # easy way to find the structure of your ros messages : print dir(msgs[name_of_topic])
 
         # extract the images and car_cmds messages
-        ext_images = msgs["/" + duckiebot_name +
-                          "/camera_node/image/compressed"].messages
-        ext_car_cmds = msgs["/" + duckiebot_name + "/joy"].messages
+        ext_images = msgs["/" + duckiebot_name +"/camera_node/image/compressed"].messages
+        ext_car_cmds = msgs["/" + duckiebot_name + "/lane_controller_node/car_cmd"].messages
+
+        #/camera_node/camera_info
 
         # create dataframe with the images and the images' timestamps
         for num, img in enumerate(ext_images):
@@ -154,8 +155,8 @@ def main():
 
             temp_df = pd.DataFrame({
                 'vel_timestamp': [vel_timestamp],
-                'vel_linear': [cmd_msg.axes[1]],
-                'vel_angular': [cmd_msg.axes[3]],
+                'vel_linear': [cmd_msg.v],
+                'vel_angular': [cmd_msg.omega],
             })
             if num == 0:
                 df_cmds = temp_df.copy()
@@ -182,7 +183,7 @@ def main():
 
         for i in range(synch_data.shape[0]):
             action = synch_data[i]
-            tobelogged_action = np.array([action[2], action[3]])
+            tobelogged_action = np.array([action[2], action[3]],dtype=float)
             tobelogged_image = synch_imgs[i*150:(i+1)*150, :, :]
             tobelogged_image = cv2.cvtColor(
                 tobelogged_image, cv2.COLOR_BGR2YUV)
