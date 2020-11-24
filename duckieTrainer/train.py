@@ -11,17 +11,17 @@ from sklearn.model_selection import train_test_split
 from frank_model import FrankNet
 from log_reader import Reader
 
-MODEL_NAME = "FrankNet"
+MODEL_NAME = "TNet2"
 logging.basicConfig(level=logging.INFO)
 
 
 #! Default Configuration
-EPOCHS = 10000
+EPOCHS = 50
 INIT_LR = 1e-3
 BATCH_SIZE = 64
-TRAIN_PERCENT = 0.8
-LOG_DIR = "/home/duckie/challenge-aido_LF-baseline-behavior-cloning/duckieTrainer/"
-LOG_FILE = "train.log"
+LOG_DIR = "."
+LOG_DIR = "/home/anthony/Duckietown/Datasets"
+LOG_FILE = "ds_300_150slimr.log"
 
 EXPERIMENTAL = False
 OLD_DATASET = False
@@ -37,7 +37,6 @@ class DuckieTrainer:
         log_file,
         old_dataset,
         experimental,
-        split,
     ):
         print("Observed TF Version: ", tf.__version__)
         print("Observed Numpy Version: ", np.__version__)
@@ -47,18 +46,9 @@ class DuckieTrainer:
         # 1. Load all the datas
         log_path = os.path.join(log_dir, log_file)
         logging.info(f"Loading Datafile {log_path}")
-        try:
-            self.observation, self.linear, self.angular = self.get_data(
-                log_file, old_dataset
-            )
-        except Exception:
-            try:
-                self.observation, self.linear, self.angular = self.get_data(
-                    log_file, old_dataset
-                )
-            except Exception:
-                logging.error("Loading dataset failed... exiting...")
-                exit(1)
+        self.observation, self.linear, self.angular = self.get_data(
+            log_path, old_dataset
+        )
         logging.info(f"Loading Datafile completed")
 
         # 2. Split training and testing
@@ -70,7 +60,7 @@ class DuckieTrainer:
             angular_train,
             angular_valid,
         ) = train_test_split(
-            self.observation, self.linear, self.angular, test_size=1-split, shuffle=True
+            self.observation, self.linear, self.angular, test_size=0.2, shuffle=True
         )
 
         model = self.configure_model(lr=init_lr, epochs=epochs)
@@ -107,7 +97,7 @@ class DuckieTrainer:
 
     def configure_model(self, lr, epochs):
         losses = {"Linear": "mse", "Angular": "mse"}
-        lossWeights = {"Linear": 2, "Angular": 10}
+        lossWeights = {"Linear": 1, "Angular": 2}
         model = FrankNet.build(200, 150)
         opt = tf.keras.optimizers.Adam(lr=lr, decay=lr / epochs)
         model.compile(
@@ -118,7 +108,7 @@ class DuckieTrainer:
     def configure_callbacks(self):
         tensorboard = tf.keras.callbacks.TensorBoard(
             log_dir="trainlogs/{}".format(
-                f'{MODEL_NAME}-{datetime.now().strftime("%Y-%m-%d@%H:%M:%S")}'
+                f'{MODEL_NAME}-{datetime.now().strftime("%Y%m%d-%H")}'
             )
         )
 
@@ -181,19 +171,15 @@ if __name__ == "__main__":
     parser.add_argument(
         "--log_file", help="Set the training log file name", default=LOG_FILE
     )
-    parser.add_argument(
-        "--split",help="Set the training and test split point (input the percentage of training)",default=TRAIN_PERCENT
-    )
 
     args = parser.parse_args()
 
     DuckieTrainer(
-        epochs=int(args.epochs),
-        init_lr=float(args.learning_rate),
-        batch_size=int(args.batch_size),
+        epochs=args.epochs,
+        init_lr=args.learning_rate,
+        batch_size=args.batch_size,
         log_dir=args.log_dir,
         log_file=args.log_file,
         old_dataset=args.old_dataset,
         experimental=args.experimental,
-        split = float(args.split)
     )
