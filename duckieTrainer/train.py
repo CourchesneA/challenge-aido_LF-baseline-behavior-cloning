@@ -11,7 +11,7 @@ from sklearn.model_selection import train_test_split
 from frank_model import FrankNet
 from log_reader import Reader
 
-MODEL_NAME = "TNet2"
+MODEL_NAME = "TNetI"
 logging.basicConfig(level=logging.INFO)
 
 
@@ -21,7 +21,7 @@ INIT_LR = 1e-3
 BATCH_SIZE = 64
 LOG_DIR = "."
 LOG_DIR = "/home/anthony/Duckietown/Datasets"
-LOG_FILE = "ds_300_150slimr.log"
+LOG_FILE = "ds_300_150slim_ir.log"
 
 EXPERIMENTAL = False
 OLD_DATASET = False

@@ -38,7 +38,7 @@ pwm_converter = SteeringToWheelVelWrapper()
 class DataGenerator:
     def __init__(self, env, max_episodes, max_steps, log_file=None, downscale=False):
         if not log_file:
-            log_file = f"ds_{max_steps}_{max_episodes}slimr.log"
+            log_file = f"ds_{max_steps}_{max_episodes}slim_ir.log"
         self.env = env
         self.env.reset()
         self.logger = Logger(self.env, log_file=log_file)

@@ -13,6 +13,7 @@ from log_schema import Episode, Step
 import cv2
 
 VEHICLE_NAME = 'zetium1'
+INPUT_DIR = "FH_bag_files"
 
 # A collection of ros messages coming from a single topic.
 MessageCollection = collections.namedtuple(
@@ -63,7 +64,7 @@ def main():
     ]
 
     # define the bags_directory in order to extract the data
-    bags_directory = os.path.join(os.getcwd(), "bag_files")
+    bags_directory = os.path.join(os.getcwd(), INPUT_DIR)
 
     # define data_directory
     data_directory = 'converted'
