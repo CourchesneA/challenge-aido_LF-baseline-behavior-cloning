@@ -1,7 +1,9 @@
 import argparse
 import logging
 import os
+import pickle
 import time
+import sys
 from datetime import datetime
 
 import numpy as np
@@ -22,6 +24,7 @@ BATCH_SIZE = 64
 LOG_DIR = "."
 LOG_DIR = "/home/anthony/Duckietown/Datasets"
 LOG_FILE = "ds_300_150slim_ir.log"
+LOG_FILE = "FH_real_ds_1.log"
 
 EXPERIMENTAL = False
 OLD_DATASET = False
@@ -37,6 +40,7 @@ class DuckieTrainer:
         log_file,
         old_dataset,
         experimental,
+        data_percent
     ):
         print("Observed TF Version: ", tf.__version__)
         print("Observed Numpy Version: ", np.__version__)
@@ -47,7 +51,7 @@ class DuckieTrainer:
         log_path = os.path.join(log_dir, log_file)
         logging.info(f"Loading Datafile {log_path}")
         self.observation, self.linear, self.angular = self.get_data(
-            log_path, old_dataset
+            log_path, old_dataset, data_percent
         )
         logging.info(f"Loading Datafile completed")
 
@@ -83,6 +87,10 @@ class DuckieTrainer:
         )
 
         model.save(f"trainedModel/{MODEL_NAME}.h5")
+
+        pickle.dump( history.history, open(f"trainlogs/{MODEL_NAME}_history.pkl", "wb" ) )
+
+
 
     def create_dir(self):
         try:
@@ -125,7 +133,7 @@ class DuckieTrainer:
 
         return [checkpoint1, checkpoint2, tensorboard]
 
-    def get_data(self, file_path, old_dataset=False):
+    def get_data(self, file_path, old_dataset=False, data_percent=1):
         """
         Returns (observation: np.array, linear: np.array, angular: np.array)
         """
@@ -134,6 +142,16 @@ class DuckieTrainer:
         observation, linear, angular = (
             reader.read() if old_dataset else reader.modern_read()
         )
+
+        assert(len(observation) == len(linear) == len(angular))
+        total_ex = len(observation)
+        use_ex = int(total_ex*data_percent)
+        print(f"found {total_ex} datapoints in file")
+        print(f"Using {use_ex} datapoint for training")
+
+        observation = observation[:use_ex]
+        linear = linear[:use_ex]
+        angular = angular[:use_ex]
 
         logging.info(
             f"""Observation Length: {len(observation)}
@@ -172,6 +190,16 @@ if __name__ == "__main__":
         "--log_file", help="Set the training log file name", default=LOG_FILE
     )
 
+    def check_valid_percent(s: str):
+        inp = float(s)
+        if not 0 < inp <= 1:
+            msg = f"input value {inp} should be between 0 and 1"
+            raise argparse.ArgumentTypeError(msg)
+        return inp
+
+    parser.add_argument(
+        "--restrict_percent", "-r", help="Percentage of the dataset to use, default = 1 (100%)", default=1.0, type=check_valid_percent
+    )
     args = parser.parse_args()
 
     DuckieTrainer(
@@ -182,4 +210,5 @@ if __name__ == "__main__":
         log_file=args.log_file,
         old_dataset=args.old_dataset,
         experimental=args.experimental,
+        data_percent = args.restrict_percent
     )
